@@ -1,16 +1,16 @@
 #!/usr/bin/python
-import subprocess
+import subprocess  """ Проработать при конвертации в .exe сбор не всего содержимого библиотек (страдает размер файла) """
 import os
 count = 0			# count octet numbers - 1.2.3.{1-254}
 IP_b = []			# list - 'negativ' .4octet_IP
 IP_b_str = '' 			# collecting list in a row
 print("Enter your IP-adress")
-IP_address = input()
+IP_address = input()    # Ввод IP-адреса
 IP_address = list(IP_address)   # conversion input IP-address in the string
 
 """ Futere choice option:
         1) broadcast ping xxx.zzz.yyy.{1-254};
-        2) background process ping & > file.txt | nohup
+        2) background process ping & > file.txt | nohup (сбор статистики)
             конвертировать bash script в .py
             # + вывод в файл.log
             # + процесс должен работать при перезагрузки ОС
@@ -19,6 +19,9 @@ IP_address = list(IP_address)   # conversion input IP-address in the string
             # выбрать:
                  сортировку по seq, время sleep (интервал)
                  посмотреть загрузку цп, объема файла с библиотеками в .exe
+        3) Сделать с ввода IP-адреса >> в /etc/network/networks
+            # выбор опции алиас/основной
+            # маска
 """
 
 """ create file.log if /pwd """
@@ -76,7 +79,7 @@ for i in range(1, 255):                  """ 192.168.1.{1-254} - broadcast  """
     3) Поиск других библиотек pinging; ipaddr
  """
 #    print(bash_cmd)  check   
-    list_count = ''
+    list_count = ''         """ вывод информации по 0/1, без статистики пинга, т.к. от команды требуется узнать только доступность хоста"""
     if  bash_cmd.returncode == 0:		# error cycle
         host_up = print(End_IP, "host up")
         print>>myfile, elements
