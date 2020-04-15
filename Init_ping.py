@@ -11,6 +11,7 @@ IP_address = list(IP_address)   # conversion input IP-address in the string
 """ Futere choice option:
         1) broadcast ping xxx.zzz.yyy.{1-254};
         2) background process ping & > file.txt | nohup (сбор статистики)
+           __gathering_ping__
             конвертировать bash script в .py
             # + вывод в файл.log
             # + процесс должен работать при перезагрузки ОС
@@ -52,7 +53,18 @@ for i in range(1, 255):                  """ 192.168.1.{1-254} - broadcast  """
     list_count = list_count + str(i)
     End_IP = full_oct3 + list_count		# type:str - row = ' '
     bash_cmd = subprocess.run(["ping", End_IP, "-c 2", "-i 0.3"], stdout=subprocess.DEVNULL)
+
+"""
+# Mind:
+pop = input("ENTER IP ADDRESS : ")
+ping = os.system(" Ping " + str(pop))
+if ping == 0:
+    print("UP")
+else :
+"""
+
 """ 
+  Tasks:
     1) Библиотека OS, команда:
     os.system("ping 192.168.1.1 -c 5 -i 0,02 1>> text.txt")
         # - проверить записывается или перезаписывается ли в файл
@@ -72,6 +84,8 @@ for i in range(1, 255):                  """ 192.168.1.{1-254} - broadcast  """
         но строчный отчет о выполнении кидает в консоль (0);(1)
     3) Поиск других библиотек pinging; ipaddr
  """
+
+ 
 #    print(bash_cmd)  check   
     list_count = ''         """ вывод информации по 0/1, без статистики пинга, т.к. от команды требуется узнать только доступность хоста"""
     if  bash_cmd.returncode == 0:		# error cycle
