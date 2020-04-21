@@ -3,7 +3,7 @@ import subprocess
 import os
 
 
-
+""" Сбор данных """
 
 
 
