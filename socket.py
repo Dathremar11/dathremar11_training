@@ -1,4 +1,5 @@
-# UDP socket
+""" Socket в Python, Библиотеки socket, socketserver, Frameworks """
+""" Стандартный модуль socket """
 import socket
 """ Серверный сокет (прослушивает/ожидает) """ # UDP
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)     # Создаем экземпляр класса socket, передаем в конструктор 2 константы: /
@@ -272,6 +273,103 @@ class BaseRequestHandler    # Класс, который не наследует
         pass
 
 """ Работа TCP сервера в модуле socketserver """  # // TCPServer
-def __init__(self, serve_address, RequestHandlerClass, bind_and_activate=True):
-    """ Constructor. May be extended? do not override """ # Не переопределять
+address_family = socket.AF_INET     # Семейство сокетов по IP-адресу, IPv4
+socket_type = socket.SOCK_STREAM    # TCP протокол
+# Присваиваем переменные в экземпляр класса socket, то есть создаем сокет, инкапсулируем его внутри класса сервера TCPServer, и работает с ним далее через поле
+# Данное поле участвует в методе server_bind(), где мы пытаемся зарезервировать адрес self.socket.bind(self.server_address), server_address - это кортеж из двух значений ''. 8888 - который мы передаем
+# 
+request_queue_size = 5
+allow_reuse_address = False
 
+def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
+    """ Constructor. May be extended, do not override """ # Не переопределять
+    BaseServer.__init__(self, server_address, RequestHandlerClass)              $1 # См. ниже - конструктор сервера
+    self.socket = socket.socket(self.address_family, self.socket_type) # Используется экземпляр класса socket, с
+# Стандартная абстракция над стандартным модулем socket
+    if bind_and_activate:                       # 
+        try:
+            self.server.bind()                  # Зарезервировали необходимый порт
+            self.server.bind_and_activate()     # Установили размер очереди см. ниже /BaseServer.__init__
+        except:
+            self.server_close()
+            raise
+
+def server_bind(self):
+    """ Called by constructor to bind the socket 
+    May be overriden
+    """
+    if self.allow_reuse_address:
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    self.socket.bind(self.server_address)
+    self.serve_address = self.socket.getsockname()
+
+    $1  """ Конструктор сервера / BaseServer.__init__(self, server_address, RequestHandlerClass)    """ 
+    timeout = None
+    def __init__(self, server_address, RequestHandlerClass):
+        self.serve_address = server_address                 # server_address - это кортеж из двух значений ''. 8888 - который мы передаем
+        self.RequestHandlerClass = RequestHandlerClass      # Вызываем на каждый запрос (на каждого нового клиента), см. выше
+        self.__is_shut_down = threading.Evant()
+        self.__shutdown_request = False
+    
+    def server_activate(self):
+        """ Called by constructor to activate the server
+        May be overriden
+        """
+        self.socket.listen(self.request_queue_size)         # Устанавливается размер очереди, для клиентов
+
+""" Сервер serve_forever """
+# Логика основанная на событиях
+    def serve_forever(self, poll_interval=0.5):
+        """ Handle one request at a time intile shutdown 
+        
+        Polls for shutdown every poll_interval seconds. Ignires self.timeoit. If you need to do periodic tasks, do them in another thread        
+        """
+        self.__is_shut_down.clear()
+        try:
+            # XXX: Consider using another file descriptor or connecting to the // Рассмотрите возможность использования другого файлового дескриптора или подключения к сокету
+            # socket to wake this up instead of polling. Polling reduces our   // чтобы разбудить его вместо опроса
+            # responsiveness to a shutdown request and wastes cpu at all other times.   // Отзывчивость на запрос о завершении работы и трата ресурсов процессора в любое другое время.
+            with _ServerSelector() as selector:                 # Как только приходит новый клиент, возникает событие, что новый клиент подключен и создается новый экземпляр класса EchoTCPHandler()
+                selector.register(self, selectors.EVENT_READ)
+            
+            while not self.__shutdown_request:
+                ready = selector.select(poll_interval)
+                if ready:
+                    self._handle_request_noblock()
+
+                self.service_actions()
+
+        finally:
+            self.__shutdown_request = False
+            self.__is_shut_down.set()
+
+""" Пример: Позволяет распаралелить вычисление или работу наших клиентов """
+import socketserver
+
+class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):# Используем свой свобственный класс TCP сервера, который наследуется от основного класса TCPServer и ThreadingMixIn
+    pass
+
+class EchoTCPHandler(socketserver.BaseRequestHandler):      # Наследуемся от BaseRequestHandler и определяем EchoTCPHandler, который будет отправлять то же сообщение как бы эхоСервер
+
+    def handle(self):                                       # Переходим в метод handle, мы использовали ThreadingMixIn - он распараллеливает обработку наших клиентов, тоесть при подключении нового клиента, который возвращается методом accept (с IP адресом), 
+        data = self.request.recv(1024).strip()              # ThreadingMixIn - Когда к нам подключается один клиент, создается экземпляр класса EchoTCPHandler, и в отдельном потоке обрабатывается метод handle
+        print('Address: {}'.format(self.client_address[0])) # Таким образом сервер может обрабатывать несколько клиентом, данный механизм используется в django run server
+        print('Data: {}'.format(data.decode()))
+        self.request.sendall(data)
+
+if __name__ = '__main__':
+    with ThreadingTCPServer(('', 8888), EchoTCPHandler) as server
+        server.serve_forever()
+
+""" Логика ThreadingMixIn """   # Распараллеливание вычислений
+--
+def process_request(self, request, client_address):
+    """ Start a new thread to process the request """
+    t = threading.Thread(target = self.process_request_thread, args = (request, client_address))
+    t.daemon = self.daemon_threads
+    if not t.daemon  and self._block_on_close:
+        if self._threads is None:
+            self.threads =  []
+        self._threads.append(t)
+    t.Start
+# Создает thread (соединение) на каждого нового клиента и обрабатывает его в новом потоке
