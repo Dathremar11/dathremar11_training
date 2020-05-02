@@ -5,6 +5,8 @@ Check_IP = []
 for i in range(10):
     v = str(i)
     N.append(v)
+# N = list(range(10))
+# Тернарное выражение A = [ [0]* m for i in range(N)] # генератор списков -
 # print(N)         # check
 # type(N)          # check
 count_ip_num = 0
