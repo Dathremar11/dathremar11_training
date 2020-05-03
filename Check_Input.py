@@ -1,5 +1,5 @@
 Check_input = input()       """ Перед включением в Init_ping - закоментить все check """
-Check_IP = []
+Check_IP = []               """ Перейти на отладку с помощью модуля pdb — The Python Debugger """
 # print(M)      check       
 # print(N)      check
 for i in range(10):

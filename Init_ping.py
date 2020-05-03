@@ -3,7 +3,7 @@ import subprocess  """ Проработать при конвертации в .
 import os
 count = 0			# count octet numbers - 1.2.3.{1-254}
 IP_b = []			# list - 'negativ' .4octet_IP
-IP_b_str = '' 			# collecting list in a row
+IP_b_str = ''       # collecting list in a row
 print("Enter your IP-adress")
 IP_address = input()    # Ввод IP-адреса
 IP_address = list(IP_address)   # conversion input IP-address in the string
