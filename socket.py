@@ -372,4 +372,5 @@ def process_request(self, request, client_address):
             self.threads =  []
         self._threads.append(t)
     t.Start
-# Создает thread (соединение) на каждого нового клиента и обрабатывает его в новом потоке
+# Создает thread (соединение) на каждого нового клиента и обрабатывает его в новом поток
+
