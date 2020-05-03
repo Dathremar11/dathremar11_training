@@ -8,6 +8,8 @@ print("Enter your IP-adress")
 IP_address = input()    # Ввод IP-адреса
 IP_address = list(IP_address)   # conversion input IP-address in the string
 
+# TODO: Сделать объектно-ориентированный рефакторинг, более качественный бэкэнд для последующего масштабирования
+#       Интроспекция объектов
 """ Futere choice option:
         1) broadcast ping xxx.zzz.yyy.{1-254};
         2) background process ping & > file.txt | nohup (сбор статистики)
