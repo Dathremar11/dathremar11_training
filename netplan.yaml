@@ -6,7 +6,7 @@ The general structure of a Netplan YAML file is shown below.
 
 network:
   version: NUMBER
-  renderer: STRING
+  renderer: STRING            # networkd
   bonds: MAPPING
   bridges: MAPPING
   dummy-devices: MAPPING
