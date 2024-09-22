@@ -1,5 +1,23 @@
 https://netplan.readthedocs.io/en/stable/netplan-yaml/
 
+YAML configuration
+Top-level configuration structure
+The general structure of a Netplan YAML file is shown below.
+
+network:
+  version: NUMBER
+  renderer: STRING
+  bonds: MAPPING
+  bridges: MAPPING
+  dummy-devices: MAPPING
+  ethernets: MAPPING
+  modems: MAPPING
+  tunnels: MAPPING
+  virtual-ethernets: MAPPING
+  vlans: MAPPING
+  vrfs: MAPPING
+  wifis: MAPPING
+  nm-devices: MAPPING
 
 network:
   ethernets:
