@@ -1,0 +1,178 @@
+https://netplan.readthedocs.io/en/stable/netplan-yaml/
+
+
+network:
+  ethernets:
+  
+    eth0:
+    network:
+  ethernets:
+
+  # Fixed MAC address:
+  network:
+  ethernets:
+    interface0:
+      match:
+        macaddress: 11:22:33:AA:BB:FF   # Fixed MAC address:
+        name: enp2*                     # All cards on second PCI bus
+        driver: ixgbe                   # First card of driver ixgbe
+        name: en*s0                     #
+        driver: ["bcmgenet", "smsc*"]   # First card with a driver matching bcmgenet or smsc*:
+        name: en*                       #
+
+    eth0:
+      addresses:
+        - "10.0.0.15/24":
+            lifetime: 0
+            label: "maas"       # Метка IP-адреса, эквивалентная команде ip address label. В настоящее время поддерживается только в серверной части networkd.
+        - "2001:1::1/64"
+
+    id0:
+      match:
+        macaddress: 52:54:00:6b:3c:58
+#     [...]
+      macaddress: 52:54:00:6b:3c:59
+
+# Routing
+network:
+  ethernets:
+    eth0:
+     # [...]
+      routes:
+        - to: default # could be 0.0.0.0/0 optionally
+          via: 10.0.0.1
+          metric: 100
+          on-link: true
+          advertised-mss: 1400
+        - to: default # could be ::/0 optionally
+          via: cf02:de:ad:be:ef::2
+    eth1:
+    #  [...]
+      routes:
+        - to: default
+          via: 172.134.67.1
+          metric: 100
+          on-link: true
+          # Not on the main routing table,
+          # does not conflict with the eth0 default route
+      table: 76
+
+
+    eth7:
+      dhcp4: true
+      dhcp6: true
+      optional-addresses: [ ipv4-ll, dhcp6 ]
+    routes:
+        - to: default # could be 0.0.0.0/0 optionally
+          via: 10.0.0.1
+          metric: 100
+          on-link: true
+          advertised-mss: 1400
+        - to: default # could be ::/0 optionally
+          via: cf02:de:ad:be:ef::2
+
+    eth1:
+#     [...]
+      routes:
+        - to: default
+          via: 172.134.67.1
+          metric: 100
+          on-link: true
+          # Not on the main routing table,
+          # does not conflict with the eth0 default route
+      table: 76
+
+
+    #  bridges
+    network:
+      bridges:
+        br0:
+          interfaces:
+             - enp5s0
+             - enp5s1
+          dhcp4: true
+
+    network:
+      ethernets:
+        switchports:
+          match: {name: "enp2*"}
+ # [...]
+      bridges:
+        br0:
+          interfaces: [switchports]
+
+
+# port-priority (mapping)
+network:
+  ethernets:
+    eth0:
+      dhcp4: false
+    eth1:
+      dhcp4: false
+  bridges:
+    br0:
+      interfaces: [eth0, eth1]
+      parameters:
+        port-priority:
+          eth0: 10
+
+
+# Properties for device type bonds
+network:
+  bonds:
+    bond0:
+      interfaces:
+        - enp5s0
+        - enp5s1
+        - enp5s2
+      parameters:
+        mode: active-backup
+
+# Gre    
+network:
+  tunnels:
+    tun0:
+      mode: gre
+      local: ...
+      remote: ...
+      keys:
+        input: 1234
+        output: 5678
+      
+# Properties for device type virtual-ethernets
+network:
+  virtual-ethernets:
+    veth0:
+      peer: veth1
+    veth1:
+      peer: veth0
+
+# Properties for device type vrfs
+network:
+  renderer: networkd
+  vrfs:
+    vrf1:
+      table: 1
+      interfaces:
+        - enp5s0
+      routes:
+        - to: default
+          via: 10.10.10.4
+      routing-policy:
+        - from: 10.10.10.42
+
+
+network:
+  vrfs:
+    vrf20:
+      table: 20
+      interfaces: [ br0 ]
+      routes:
+        - to: default
+          via: 10.10.10.3
+      routing-policy:
+        - from: 10.10.10.42
+    [...]
+  bridges:
+    br0:
+      interfaces: []
