@@ -56,7 +56,21 @@ iptables -N MY_CHAIN
 iptables -A MY_CHAIN -s 192.168.0.100 -j DROP 
 iptables -A INPUT -j MY_CHAIN 
 
+
 В этом примере команда -N MY_CHAIN создает новую цепочку с именем MY_CHAIN. 
 Затем добавляется правило, которое отбрасывает все пакеты от 192.168.0.100. 
 Наконец, цепочка MY_CHAIN добавляется в цепочку INPUT, что означает, 
 что все входящие пакеты будут также проходить через цепочку MY_CHAIN.
+
+
+iptables -t mangle -A FORWARD -p tcp --dport 443 -m connbytes --connbytes-dir original --connbytes-mode packets --connbytes 0:19 -j NFQUEUE --queue-num 537 --queue-bypass
+
+connbytes позволяет отбирать пакеты по количеству данных, переданных по настоящий момент, или по среднему размеру пакета. 
+
+--connbytes-dir указывает, какие пакеты учитывать (свои, ответные или все). 
+
+--connbytes-mode определяет отслеживаемый показатель — число пакетов, байтов или средний размер всех полученных пакетов (в байтах). 
+
+iptables -t mangle -I POSTROUTING -o <external_interface> -p tcp --dport 80 -m connbytes --connbytes-dir=original --connbytes-mode=packets --connbytes 1:6 -m mark ! --mark 0x40000000/0x40000000 -m set --match-set zapret dst -j NFQUEUE --queue-num 200 --queue-bypass
+
+Эта команда позволяет снизить нагрузку на процессор, отказываясь обрабатывать ненужные пакеты.
